@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>P2P 共享資源宣言 繁中版封面</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #222831;
+    }
+
+    #canvas-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    canvas {
+      display: block;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .controls {
+      position: fixed;
+      top: 50%;
+      right: -80px;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      z-index: 1000;
+      background: rgba(34, 40, 49, 0.85);
+      padding: 12px 8px;
+      border-radius: 16px;
+  border: 1px solid rgba(0, 161, 182, 0.3);
+      backdrop-filter: blur(10px);
+      transition: right 0.22s cubic-bezier(.2,.9,.2,1);
+      pointer-events: auto;
+      width: 56px;
+    }
+
+    .controls.expanded {
+      right: 70px;
+    }
+
+    .toggle-controls {
+      position: fixed;
+      top: 50%;
+      right: 20px;
+      transform: translateY(-50%);
+      width: 40px;
+      height: 40px;
+      background: rgba(34, 40, 49, 0.85);
+  border: 1px solid rgba(0, 161, 182, 0.3);
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1001;
+      transition: all 0.18s ease;
+    }
+
+    .toggle-controls:hover {
+      background: rgba(0, 161, 182, 0.12);
+      border-color: #00a1b6;
+    }
+
+    .toggle-controls svg {
+      width: 20px;
+      height: 20px;
+      stroke: #00a1b6;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      transition: transform 0.22s ease;
+    }
+
+    .toggle-controls.expanded svg {
+      transform: rotate(180deg);
+    }
+
+    .control-btn {
+      width: 48px;
+      height: 48px;
+      background: transparent;
+  border: 1px solid rgba(0, 161, 182, 0.3);
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      color: #00a1b6;
+      position: relative;
+    }
+
+    .control-btn:hover {
+      background: rgba(0, 161, 182, 0.2);
+      border-color: #00a1b6;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 161, 182, 0.3);
+    }
+
+    .control-btn:active {
+      transform: translateY(0);
+    }
+
+    .control-btn svg {
+      width: 24px;
+      height: 24px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .color-btn {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .color-btn input[type="color"] {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .color-preview {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      pointer-events: none;
+    }
+
+    .tooltip {
+      position: absolute;
+      background: rgba(0, 161, 182, 0.95);
+      color: #222831;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s;
+      bottom: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .control-btn:hover .tooltip {
+      opacity: 1;
+    }
+
+    @media (max-width: 768px) {
+      .controls {
+        padding: 10px 12px;
+        gap: 8px;
+        right: -260px;
+      }
+
+      .controls.expanded {
+        right: 10px;
+      }
+
+      .toggle-controls {
+        right: 10px;
+      }
+
+      .control-btn {
+        width: 44px;
+        height: 44px;
+      }
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(0,161,182,0.35); transform: scale(1); }
+      50% { box-shadow: 0 0 12px 6px rgba(0,161,182,0.12); transform: scale(1.03); }
+      100% { box-shadow: 0 0 0 0 rgba(0,161,182,0.0); transform: scale(1); }
+    }
+
+    .toggle-controls:not(.expanded) {
+      animation: pulse 2.6s infinite;
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas-container"></div>
+  
+  <button class="toggle-controls" id="toggleControls" title="展開 / 收合">
+    <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+  </button>
+
+  <div class="controls">
+    <button class="control-btn" id="refreshBtn" title="刷新">
+      <svg viewBox="0 0 24 24"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/></svg>
+      <span class="tooltip">刷新</span>
+    </button>
+    
+    <button class="control-btn" id="pauseBtn" title="暫停">
+      <svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+      <span class="tooltip">暫停</span>
+    </button>
+    
+    <button class="control-btn" id="randomBtn" title="隨機">
+      <svg viewBox="0 0 24 24"><path d="M2 18h1.4c1.3 0 2.5-.6 3.3-1.7l6.1-8.6c.7-1.1 2-1.7 3.3-1.7H22M2 6h1.4c1.3 0 2.5.6 3.3 1.7l6.1 8.6c.7 1.1 2 1.7 3.3 1.7H22M18 2l4 4-4 4M18 14l4 4-4 4"/></svg>
+      <span class="tooltip">隨機</span>
+    </button>
+    
+    <button class="control-btn color-btn" id="color1Btn" title="顏色 1">
+      <div class="color-preview" id="color1Preview"></div>
+  <input type="color" id="color1" value="#00a1b6">
+      <span class="tooltip">顏色 1</span>
+    </button>
+    
+    <button class="control-btn color-btn" id="color2Btn" title="顏色 2">
+      <div class="color-preview" id="color2Preview"></div>
+  <input type="color" id="color2" value="#6ab93d">
+      <span class="tooltip">顏色 2</span>
+    </button>
+    
+    <button class="control-btn" id="shareBtn" title="分享">
+      <svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      <span class="tooltip">分享</span>
+    </button>
+  </div>
+
+  <script src="sketch.js"></script>
+</body>
+</html>
